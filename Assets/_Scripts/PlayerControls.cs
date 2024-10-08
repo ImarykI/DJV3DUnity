@@ -8,6 +8,8 @@ public class PlayerControls : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] InputAction movement;
+    [SerializeField] InputAction fire;
+    [SerializeField] GameObject[] lasers;
     [SerializeField] float controlSpeed = 20f;
     [SerializeField] float xMaxRange = 10f;
     [SerializeField] float yMaxRange = 3f;
@@ -22,17 +24,20 @@ public class PlayerControls : MonoBehaviour
     void OnEnable()
     {
         movement.Enable();
+        fire.Enable();
     }
 
     private void OnDisable()
     {
         movement.Disable();
+        fire.Disable();
     }
 
     private void Update()
     {
         HandleMovemet();
         ProcessRotation();
+        ProcessingFire();
     }
 
     void HandleMovemet()
@@ -58,5 +63,24 @@ public class PlayerControls : MonoBehaviour
         float yaw = transform.localPosition.x * positionYawPower;
         float roll = horizontalThrow * controlRollPower;
         transform.localRotation = Quaternion.Euler(pitch, yaw, roll);
+    }
+
+    void ProcessingFire()
+    {
+        if (fire.ReadValue<float>() > 0)
+        {
+            SetLasersActive(true);
+        }
+        else SetLasersActive(false);
+
+    }
+
+    void SetLasersActive(bool activeState)
+    {
+        foreach (GameObject laser in lasers)
+        {
+            ParticleSystem.EmissionModule emission = laser.GetComponent<ParticleSystem>().emission;
+            emission.enabled = activeState;
+        }
     }
 }
