@@ -7,6 +7,8 @@ public class CollisionHandler : MonoBehaviour
 {
 
     [SerializeField] float loadDelay = 1.0f;
+    [SerializeField] ParticleSystem crashVFX;
+    [SerializeField] GameObject visualts;
     private void OnTriggerEnter(Collider other)
     {
         StartCrashSequence(other);
@@ -15,7 +17,10 @@ public class CollisionHandler : MonoBehaviour
     void StartCrashSequence(Collider other)
     {
         if (other.gameObject.name == "Terrain") return;
-            
+
+        crashVFX.Play();
+        visualts.gameObject.SetActive(false);
+        GetComponent<BoxCollider>().enabled = false;
         GetComponent<PlayerControls>().enabled = false;
         Invoke("ReloadScene", loadDelay);
     }
