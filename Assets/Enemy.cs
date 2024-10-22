@@ -8,17 +8,22 @@ public class Enemy : MonoBehaviour
     [SerializeField] ParticleSystem deathParticles;
     [SerializeField] Transform parent;
 
+    [SerializeField] int scorePoints = 10;
+    ScoreBoard scoreBoard;
+
     ParticleSystem vfx;
 
     private void Start()
     {
         parent = GameObject.FindWithTag("SpawnAtRunTime").transform;
+        scoreBoard = FindAnyObjectByType<ScoreBoard>();
 
     }
 
     private void OnParticleCollision(GameObject other)
     {
         DeathSequence();
+        scoreBoard.IncreaseScore(scorePoints);
     }
 
     void DeathSequence()
@@ -40,4 +45,6 @@ public class Enemy : MonoBehaviour
         }
         Destroy(gameObject);
     }
+
+
 }
