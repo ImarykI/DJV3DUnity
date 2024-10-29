@@ -8,6 +8,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] ParticleSystem deathParticles;
     [SerializeField] Transform parent;
 
+    [SerializeField] int hitPoints = 1;
+    [SerializeField] ParticleSystem hitVFX;
+
     [SerializeField] int scorePoints = 10;
     ScoreBoard scoreBoard;
 
@@ -18,12 +21,14 @@ public class Enemy : MonoBehaviour
         parent = GameObject.FindWithTag("SpawnAtRunTime").transform;
         scoreBoard = FindAnyObjectByType<ScoreBoard>();
 
+        Rigidbody rb = gameObject.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+
     }
 
     private void OnParticleCollision(GameObject other)
     {
-        DeathSequence();
-        scoreBoard.IncreaseScore(scorePoints);
+        ProcessHit();
     }
 
     void DeathSequence()
@@ -46,5 +51,23 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
+    void ProcessHit()
+    {
+        scoreBoard.IncreaseScore(scorePoints);
+        hitPoints--;
+        if (hitPoints < 1)
+        {
+            DeathSequence();
+        }
+        else
+        {
+            Vector3 vfxPosition = transform.position;
+            vfxPosition.z -= transform.localScale.z;
+            vfx = Instantiate(hitVFX, vfxPosition, Quaternion.identity);
+            vfx.transform.parent = parent;
+            Invoke(nameof(DestroySpawnedExplosition), 0.1f);
+        }
+
+    }
 
 }
